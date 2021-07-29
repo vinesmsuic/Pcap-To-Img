@@ -1,3 +1,7 @@
+# Author: @vinesmsuic
+#
+#
+
 import dpkt
 import numpy as np
 import pandas as pd
@@ -9,6 +13,7 @@ def parser():
     parser = argparse.ArgumentParser(description="Selecting Parameter of Packets and Bytes.")
     parser.add_argument("--packet", type=int, required=True, help="number of required packets")
     parser.add_argument("--byte", type=int, required=True, help="number of trimmed byte")
+    parser.add_argument("--limit", type=int, required=False, default=-1, help="only extract packets from the largest N flows")
     return parser.parse_args()
 
 
@@ -66,31 +71,48 @@ def main():
     args = parser()
 
     directory = os.path.join('2_Flow', 'AllLayers')
-
-    folder_df = pd.DataFrame(columns = ['Path','Bytes'])
     
     for folder in os.listdir(directory):
 
         if(os.path.isdir(os.path.join(directory,folder))):
             
-            print("Now Processing Folder: ", folder)
             
-            for f in tqdm(os.listdir(os.path.join(directory,folder))):
+            print("Now Processing Folder: ", folder)
+
+            # Create Dataframe Object
+            folder_df = pd.DataFrame(columns = ['Path','Bytes'])
+
+            searching_folders = os.listdir(os.path.join(directory,folder))
+
+            if(args.limit!= -1):
+                #Sort the searching folders by size (largerst to smallest)
+                searching_folders = sorted(searching_folders, key=lambda f: os.path.getsize(os.path.abspath(os.path.join(directory, folder, f))), reverse=True)  
+
+                if(len(searching_folders) > args.limit):
+                    searching_folders = searching_folders[:args.limit]
+                else:
+                    print("Folder "+str(folder), "does not have required "+str(args.limit) + "files. Folder only has "+str(len(searching_folders)) + " files.")
+
+            for f in tqdm(searching_folders):
+
                 if f.endswith(".pcap"): 
                     #print(os.path.join(directory, folder, f))
                     path_to_file = os.path.join(directory, folder, f)
                     packets = packet_from_file(path_to_file, packetnum=args.packet, target_length=args.byte)
+                    # Create Dataframe Object
                     folder_df = folder_df.append({'Path' : path_to_file, 'Bytes' : packets}, ignore_index = True)
+
                     continue
                 else:
                     continue
 
-            print(folder, "Entries:", folder_df.shape[0])
+            print("Row entries of "+str(folder)+": ",folder_df.shape[0])
         
-            save_path = os.path.join('3_Packet' , os.path.basename(os.path.join(directory,folder)))+".pkl"
+            save_path = os.path.join('3_Packet' , folder)+"-p"+str(args.packet)+"-b"+str(args.byte)+"-l"+str(abs(args.limit))+".pkl"
             
             folder_df.to_pickle(save_path)
             print("Saved to file: ", save_path)
+            print("-"*20)
         
             continue
         else:
