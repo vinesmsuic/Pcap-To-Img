@@ -1,9 +1,3 @@
-*.ipynb_checkpoints
-*.pcap
-*.pkl
-*.csv
-Test
-
 # JPEG
 *.jpg
 *.jpeg
@@ -67,3 +61,12 @@ Test
 # 3D Images
 *.3dm
 *.max
+
+# Extras
+*.ipynb_checkpoints
+*.pcap
+*.pkl
+*.csv
+*.ipynb
+Test
+
