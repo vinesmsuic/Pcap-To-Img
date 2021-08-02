@@ -8,6 +8,7 @@ import pandas as pd
 import os
 from tqdm import tqdm
 import argparse
+import random
 
 def parser():
     parser = argparse.ArgumentParser(description="Selecting Parameter of Packets and Bytes.")
@@ -84,14 +85,27 @@ def main():
 
             searching_folders = os.listdir(os.path.join(directory,folder))
 
-            if(args.limit!= -1):
+            #####################################
+            # TODO:
+            #
+            #
+            ##if(args.sort == 1):
                 #Sort the searching folders by size (largerst to smallest)
-                searching_folders = sorted(searching_folders, key=lambda f: os.path.getsize(os.path.abspath(os.path.join(directory, folder, f))), reverse=True)  
+                ##searching_folders = sorted(searching_folders, key=lambda f: os.path.getsize(os.path.abspath(os.path.join(directory, folder, f))), reverse=True)  
+            ##else:
+            random.seed(72)
+            random.shuffle(searching_folders)
 
+            ######################################
+
+
+            if(args.limit!= -1):
                 if(len(searching_folders) > args.limit):
                     searching_folders = searching_folders[:args.limit]
-                else:
+                elif(len(searching_folders) < args.limit):
                     print("Folder "+str(folder), "does not have required "+str(args.limit) + "files. Folder only has "+str(len(searching_folders)) + " files.")
+            
+
 
             for f in tqdm(searching_folders):
 
