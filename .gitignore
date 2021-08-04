@@ -65,9 +65,11 @@
 # Extras
 *.ipynb_checkpoints
 *.pcap
+*.pcapng
 *.pkl
 *.csv
 *.ipynb
 Test
 Archive
 Temp
+*.txt

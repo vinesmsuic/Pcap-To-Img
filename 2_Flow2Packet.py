@@ -17,7 +17,25 @@ def parser():
     parser.add_argument("--limit", type=int, required=False, default=-1, help="only extract packets from the largest N flows")
     return parser.parse_args()
 
+# Sanitization
+def zero_mask_packet(eth_packet):
 
+    #Mask MAC Address to 00:00:00:00:00:00
+    eth_packet.src = b'\x00\x00\x00\x00\x00\x00'
+    eth_packet.dst = b'\x00\x00\x00\x00\x00\x00'
+
+    if(eth_packet.data.__class__.__name__ == 'IP6'):
+        #Mask IPv6 Address to 0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0
+        eth_packet.data.src = b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+        eth_packet.data.dst = b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+    else:
+        #Mask IPv4 Address to 0.0.0.0
+        eth_packet.data.src = b'\x00\x00\x00\x00'
+        eth_packet.data.dst = b'\x00\x00\x00\x00'
+    
+    return eth_packet
+
+# Extract Information
 def get_packets(pcap, packetnum, target_length):
     
     r_num = 0
@@ -28,7 +46,10 @@ def get_packets(pcap, packetnum, target_length):
 
         r_num += 1
 
-        byte_buf = bytes(buf)
+        eth_packet = dpkt.ethernet.Ethernet(buf)
+        eth_packet = zero_mask_packet(eth_packet)
+
+        byte_buf = bytes(eth_packet)
         trimmed_buf = trimming(byte_buf, target_length=target_length)
 
         packetlist.append(trimmed_buf)

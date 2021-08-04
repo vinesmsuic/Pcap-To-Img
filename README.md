@@ -37,3 +37,14 @@ Split Pcap files into Flows
 .\1_Pcap2Flow.ps1
 ```
 
+```Powershell
+python .\2_Flow2Packet.py
+```
+
+```Powershell
+tracewrangler_x64\TraceWrangler.exe /filelist:process_list.txt zero_anon_v1.task /autorun /exit
+```
+
+```Powershell
+python .\3_Packet2Image.py
+```
