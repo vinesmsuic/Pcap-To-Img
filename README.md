@@ -41,8 +41,16 @@ Split Pcap files into Flows
 python .\2_Flow2Packet.py
 ```
 
-```Powershell
-tracewrangler_x64\TraceWrangler.exe /filelist:process_list.txt zero_anon_v1.task /autorun /exit
+```
+usage: 2_Flow2Packet.py [-h] --packet PACKET --byte BYTE [--limit LIMIT]
+
+Selecting Parameter of Packets and Bytes.
+
+optional arguments:
+  -h, --help       show this help message and exit
+  --packet PACKET  number of required packets
+  --byte BYTE      number of trimmed byte
+  --limit LIMIT    only extract packets from the largest N flows
 ```
 
 ```Powershell
